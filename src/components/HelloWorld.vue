@@ -1,5 +1,5 @@
 <template>
-  <v-container class="space-evenly">
+  <v-container class="border" >
     <v-row class="text-center">
       <v-col class="mb-4">
         
@@ -10,43 +10,48 @@
        
       <input v-model="newTodo" type="text" placeholder="Enter new task..." id="input" >
         <v-btn @click="addTodo()">ADD </v-btn>
+           </div>
 
-<div class="container">
+<div class="box">
         <ol>
          
-            
-          <li v-bind:key="todo.index" v-for="(todo,index) in todosArray" style="font-weight: bold;"> 
-             <input type="checkbox" id="checkbox" v-model="todo.completed"> 
-                <span :class="{done: todo.completed}">{{todo.text}}</span> 
-                    
+           <div class="node ">
+             <div class="eachTask">
+            <li v-bind:key="todo.index" v-for="(todo,index) in todosArray" style="font-weight: bold;">  
+              <input type="checkbox" id="checkbox" v-model="todo.completed"> 
+                  <span class="space-CheckBox" :class="{done: todo.completed} ">{{todo.text}}</span> 
+                  
+                  
+                   <div class="buttons"> 
                     <v-btn left
                     color="red"
                     elevation="10"
-                    small
-                    class="deleteBtn" @click="deleteTodo(index)"> Delete
+                    x-small
+                    class="space" @click="deleteTodo(index)"> Delete
                     <v-icon   right>mdi-delete </v-icon>
 
                     </v-btn>
-                    
+                   
 
                    <v-btn right
                     color="blue"
                     elevation="10"
-                    small
-                    class="editBtn " @click="editTodo(index)"> Edit
+                    x-small
+                   @click="editTodo(index)"> Edit
                      <i class="material-icons" >create</i>
                      </v-btn>
-                   
+                   </div>
                  
                  
                   
           </li>
-            
+          </div>
+            </div> 
          
        
 
         </ol>
-       </div>
+    
        
        
         </div>
@@ -90,12 +95,24 @@
   text-decoration: line-through;
   background-color: rgb(118, 226, 118);
 }
-.container{
-  text-align: center;
-
+.buttons{
+  justify-content: space-evenly;
+  padding: 15px;
+}
+.box{
+  display: inline-block;
+  border: solid;
   padding: 30px;
-  margin: 50;
- justify-content: space-evenly;
+}
+.space{
+  margin-right: 30px;
+}
+.space-CheckBox{
+  margin-left: 10px;
+}
+.node{
+  justify-items: flex-start;
+  display:grid;
 }
 
 </style>
