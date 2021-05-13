@@ -1,59 +1,116 @@
 <template>
-  <v-container class="border" >
+  <v-container class="container">
     <v-row class="text-center">
       <v-col class="mb-4">
-        
-        <div class= "container">
-        <h1 class="display-2 font-weight-bold mb-3">
-          Todo list 
-        </h1> 
-       
-      <input v-model="newTodo" type="text" placeholder="Enter new task..." id="input" >
-        <v-btn @click="addTodo()">ADD </v-btn>
-           </div>
+        <h1 class="display-2 font-weight-bold mb-3">Todo list</h1>
+        <div style="margin-top: 50px" class="d-inline-flex">
+          <input
+            style="border: 1px solid"
+            v-model="newTodo"
+            type="text"
+            placeholder="Enter new task..."
+            id="input"
+          />
+          <v-btn @click="addTodo()">ADD </v-btn>
+        </div>
 
-<div class="box">
-        <ol>
-         
-           <div class="node ">
-             <div class="eachTask">
-            <li v-bind:key="todo.index" v-for="(todo,index) in todosArray" style="font-weight: bold;">  
-              <input type="checkbox" id="checkbox" v-model="todo.completed"> 
-                  <span class="space-CheckBox" :class="{done: todo.completed} ">{{todo.text}}</span> 
-                  
-                  
-                   <div class="buttons"> 
-                    <v-btn left
-                    color="red"
-                    elevation="10"
-                    x-small
-                    class="space" @click="deleteTodo(index)"> Delete
-                    <v-icon   right>mdi-delete </v-icon>
+        <div v-if="todosArray.length === 0">
+          <H3 style="margin-top: 50px"
+            >The list is empty, please add some tasks.</H3
+          >
+        </div>
+        <div v-else class="tableBox text-center">
+          <table class="table table-bordered mt-10">
+            <thead>
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">Task</th>
+                <th scope="col">Done</th>
+                <th scope="col" class="">Delete</th>
+                <th scope="col" class="text-center">Edit</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                v-bind:key="todo.index"
+                v-for="(todo, index) in todosArray"
+                style="font-weight: bold"
+              >
+                <th>{{ index + 1 }}</th>
 
+                <td
+                  v-if="!todosArray[index].isEditing"
+                  :class="{ done: todo.completed }"
+                >
+                  {{ todo.text }}
+                </td>
+
+                <td v-else :class="{ done: todo.completed }">
+                  <input
+                   style="border: 1px solid"
+                  v-model="existingTodo"
+                          
+                    type="text"
+                    id="inputEditTodo"
+                  value={existingTodo}
+                  />
+                </td>
+
+                <div>
+                  <input 
+                    type="checkbox"
+                    id="checkbox"
+                    v-model="todo.completed"
+                  />
+                </div>
+
+                <td>
+                  <div class="text-center">
+                    <v-btn
+                      color="#CD5C5C"
+                      elevation="10"
+                      x-small
+                      @click="deleteTodo(index)"
+                    >
+                      Delete
+                      <v-icon>mdi-delete </v-icon>
                     </v-btn>
-                   
+                  </div>
+                </td>
 
-                   <v-btn right
-                    color="blue"
-                    elevation="10"
-                    x-small
-                   @click="editTodo(index)"> Edit
-                     <i class="material-icons" >create</i>
-                     </v-btn>
-                   </div>
-                 
-                 
-                  
-          </li>
-          </div>
-            </div> 
-         
-       
+                <td  v-if="todosArray[index].isEditing">
+               
 
-        </ol>
-    
-       
-       
+                    <v-btn
+                      color="#AFEEEE"
+                      elevation="10"
+                      x-small
+                      v-if="todosArray[index].isEditing"
+                      @click="editTodo(index)"
+                    >  Update
+                    
+                      <i class="material-icons">create</i>
+                    </v-btn>
+                
+                  </td>
+                
+                <td  v-else> 
+                 
+                    <v-btn
+                      color="#AFEEEE"
+                      elevation="10"
+                      x-small
+                     
+                      @click="changeTodo(index)"
+                    >  Edit
+                    
+                      <i class="material-icons">create</i>
+                    </v-btn>
+                 
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </v-col>
     </v-row>
@@ -61,58 +118,68 @@
 </template>
 
 <script>
-  export default {
-    name: 'HelloWorld',
+export default {
+  name: "HelloWorld",
 
-    data(){
-      return{
-              newTodo:'',
-              todosArray:[
-              {text:'Go shopping',completed:false},
-              {text:'Go play', completed:false}]
-              
-      }
-    } ,
-    methods:{
-        addTodo(){
-          if(this.newTodo!=='')
-           this.todosArray.push({text:this.newTodo,completed:false}) 
-           this.newTodo=''
-        },
-        editTodo(){
-        //  this.todosArray.index
-
-        },
-        deleteTodo(index){
-          this.todosArray.splice(index,1)
-        }
-    }  
- }
+  data() {
+    return {
+      newTodo: "",
+      existingTodo:"",
+      isEditing: false,
+      todosArray: [
+        { text: "Go outside", completed: false, isEditing: false },
+        { text: "Go play", completed: false, isEditing: false },
+      ],
+    };
+  },
+  methods: {
+    addTodo() {
+      if (this.newTodo !== "")
+        this.todosArray.push({
+          text: this.newTodo,
+          completed: false,
+          isEditing: false,
+        });
+      this.newTodo = "";
+    },
+    editTodo(index) {
+      this.todosArray[index].isEditing = false;
+      this.todosArray[index].text=this.existingTodo;
+     
+     
+    },
+    deleteTodo(index) {
+      this.todosArray.splice(index, 1);
+    },
+    changeTodo(index) {
+      this.todosArray[index].isEditing = true;
+    },
+  },
+};
 </script>
 
 <style >
-.done{
+.done {
   text-decoration: line-through;
-  background-color: rgb(118, 226, 118);
+  color: red;
+  background-color: black;
 }
-.buttons{
+
+.buttons {
   justify-content: space-evenly;
   padding: 15px;
 }
-.box{
+.box {
   display: inline-block;
   border: solid;
   padding: 30px;
 }
-.space{
-  margin-right: 30px;
-}
-.space-CheckBox{
+
+.space-CheckBox {
   margin-left: 10px;
 }
-.node{
+.node {
   justify-items: flex-start;
-  display:grid;
+  display: grid;
 }
-
 </style>
