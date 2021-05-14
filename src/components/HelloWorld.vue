@@ -1,17 +1,24 @@
 <template>
-  <v-container class="container">
+  <v-container >
     <v-row class="text-center">
       <v-col class="mb-4">
+        <div class="containerTable">
+
+        <!-- Add new task input -->
         <h1 class="display-2 font-weight-bold mb-3">Todo list</h1>
-        <div style="margin-top: 50px" class="d-inline-flex">
+        <div style="margin-top: 50px" class="d-flex">
           <input
-            style="border: 1px solid"
+            style="border: 1px solid "
             v-model="newTodo"
             type="text"
-            placeholder="Enter new task..."
+            placeholder=" Enter new task..."
             id="input"
-          />
-          <v-btn @click="addTodo()">ADD </v-btn>
+            
+            />
+          <v-btn @click="addTodo()"
+           elevation="8"
+          >ADD </v-btn>
+
         </div>
 
         <div v-if="todosArray.length === 0">
@@ -19,7 +26,9 @@
             >The list is empty, please add some tasks.</H3
           >
         </div>
-        <div v-else class="tableBox text-center">
+
+        <!-- Setup bootstrap table -->
+        <div v-else class="tableBox ">
           <table class="table table-bordered mt-10">
             <thead>
               <tr>
@@ -31,43 +40,50 @@
               </tr>
             </thead>
             <tbody>
+
+              <!--List tasks -->
               <tr
                 v-bind:key="todo.index"
                 v-for="(todo, index) in todosArray"
                 style="font-weight: bold"
               >
-                <th>{{ index + 1 }}</th>
+               <!--Number of tasks -->
+                <th class="col-md-1">{{ index + 1 }}</th>
 
-                <td
-                  v-if="!todosArray[index].isEditing"
-                  :class="{ done: todo.completed }"
+               <!--If the task is completed line-through and background green -->
+                <td 
+                  v-if="!todosArray[index].isEditing && todosArray[index].completed"
+                  class="table-success"
+                   :class="{ done: todo.completed }"
                 >
-                  {{ todo.text }}
+                {{ todo.text }}
                 </td>
-
-                <td v-else :class="{ done: todo.completed }">
-                  <input
-                   style="border: 1px solid"
-                  v-model="existingTodo"
-                          
+              
+                 <!--If the user is editing a task, use Update button and add input -->
+                <td  v-else  > 
+                  <input   v-if="todosArray[index].isEditing"
+                    style="border: 2px solid; border-radius: 4px; "
+                    v-bind:value="todosArray[index].text"
+                    id="inputEdit"
                     type="text"
-                    id="inputEditTodo"
-                  value={existingTodo}
+                    onkeypress="this.style.width = ((this.value.length + 1) * 8) + 'px';"
                   />
+                  <div v-else> {{ todo.text }} </div>
                 </td>
 
-                <div>
-                  <input 
+                <td class="col-md-1">
+                  <input
                     type="checkbox"
                     id="checkbox"
                     v-model="todo.completed"
                   />
-                </div>
+                </td>
 
-                <td>
+                <!--Delete a task -->
+                <td class="col-md-1">
                   <div class="text-center">
                     <v-btn
-                      color="#CD5C5C"
+                      color="#FF0000"
                       elevation="10"
                       x-small
                       @click="deleteTodo(index)"
@@ -78,39 +94,39 @@
                   </div>
                 </td>
 
-                <td  v-if="todosArray[index].isEditing">
-               
+                 <!-- if user is editing a task, Edit a task (Update btn) -->
+                <td  class="col-md-1" v-if="todosArray[index].isEditing">
+                  <v-btn
+                    color="#AFEEEE"
+                    elevation="10"
+                    x-small
+                    v-if="todosArray[index].isEditing"
+                    @click="editTodo(index)"
+                  >
+                    Update
 
-                    <v-btn
-                      color="#AFEEEE"
-                      elevation="10"
-                      x-small
-                      v-if="todosArray[index].isEditing"
-                      @click="editTodo(index)"
-                    >  Update
-                    
-                      <i class="material-icons">create</i>
-                    </v-btn>
-                
-                  </td>
-                
-                <td  v-else> 
-                 
-                    <v-btn
-                      color="#AFEEEE"
-                      elevation="10"
-                      x-small
-                     
-                      @click="changeTodo(index)"
-                    >  Edit
-                    
-                      <i class="material-icons">create</i>
-                    </v-btn>
-                 
+                    <i class="material-icons">create</i>
+                  </v-btn>
+                </td>
+
+
+                <!--Edit a task button (user not updating) -->
+                <td  class="col-md-1" v-else>
+                  <v-btn
+                    color="#C0C0C0"
+                    elevation="10"
+                    x-small
+                    @click="changeEditButton(index)"
+                  >
+                    Edit
+
+                    <i class="material-icons">create</i>
+                  </v-btn>
                 </td>
               </tr>
             </tbody>
           </table>
+        </div>
         </div>
       </v-col>
     </v-row>
@@ -124,11 +140,11 @@ export default {
   data() {
     return {
       newTodo: "",
-      existingTodo:"",
+      existingTodo: "",
       isEditing: false,
       todosArray: [
-        { text: "Go outside", completed: false, isEditing: false },
-        { text: "Go play", completed: false, isEditing: false },
+        { text: "Create a todo list", completed: false, isEditing: false },
+        { text: "Learn Vue.Js", completed: false, isEditing: false },
       ],
     };
   },
@@ -144,16 +160,16 @@ export default {
     },
     editTodo(index) {
       this.todosArray[index].isEditing = false;
-      this.todosArray[index].text=this.existingTodo;
-     
-     
+      this.todosArray[index].text = this.existingTodo;
+      this.todosArray[index].text = document.getElementById("inputEdit").value;
     },
     deleteTodo(index) {
       this.todosArray.splice(index, 1);
     },
-    changeTodo(index) {
+    changeEditButton(index) {
       this.todosArray[index].isEditing = true;
     },
+   
   },
 };
 </script>
@@ -161,25 +177,8 @@ export default {
 <style >
 .done {
   text-decoration: line-through;
-  color: red;
-  background-color: black;
 }
-
-.buttons {
-  justify-content: space-evenly;
-  padding: 15px;
-}
-.box {
-  display: inline-block;
-  border: solid;
-  padding: 30px;
-}
-
-.space-CheckBox {
-  margin-left: 10px;
-}
-.node {
-  justify-items: flex-start;
-  display: grid;
+#input{
+  width: 100%;
 }
 </style>
